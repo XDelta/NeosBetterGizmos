@@ -1,6 +1,13 @@
-﻿# NeosBetterGizmos
+# NeosBetterGizmos
 
-A [NeosModLoader](https://github.com/neos-modding-group/NeosModLoader) mod for [Neos VR](https://neos.com/). Gizmos will automatically face you instead of not rotating.
+A [NeosModLoader](https://github.com/neos-modding-group/NeosModLoader) mod for [Neos VR](https://neos.com/). Gizmos will automatically face you instead of not rotating. Addition options for persistence and showing RefIDs.
+
+## Config Options
+
+| Config Option     | Default | Description |
+| ------------------ | ------- | ----------- |
+| `ShowRefID` | `false` | If `true` will show RefIDs on your gizmos |
+| `PersistentGizmo` | `true` | If `false`, gizmos will be made non-persistent |
 
 ## Installation
 1. Install [NeosModLoader](https://github.com/neos-modding-group/NeosModLoader).
