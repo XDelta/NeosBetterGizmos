@@ -33,7 +33,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>R:\SteamLibrary\steamapps\common\NeosVRBetaBuilds\NeosStandalone\app\0Harmony.dll</HintPath>
+      <HintPath>R:\SteamLibrary\steamapps\common\NeosVR\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="BaseX">
