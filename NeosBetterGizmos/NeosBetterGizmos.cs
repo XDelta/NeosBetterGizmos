@@ -16,7 +16,7 @@ namespace NeosBetterGizmos {
 			Config = GetConfiguration();
 			Config.Save(true);
 
-			Harmony harmony = new Harmony("tk.deltawolf.NeosBetterGizmos");
+			Harmony harmony = new Harmony("net.deltawolf.NeosBetterGizmos");
 			harmony.PatchAll();
 		}
 
