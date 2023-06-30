@@ -31,26 +31,26 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <ItemDefinitionGroup>
+    <Reference>
+      <Private>false</Private>
+    </Reference>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>R:\SteamLibrary\steamapps\common\NeosVR\0Harmony.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="BaseX">
       <HintPath>R:\SteamLibrary\steamapps\common\NeosVRBetaBuilds\NeosStandalone\app\Neos_Data\Managed\BaseX.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="CodeX">
       <HintPath>R:\SteamLibrary\steamapps\common\NeosVRBetaBuilds\NeosStandalone\app\Neos_Data\Managed\CodeX.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="FrooxEngine">
       <HintPath>R:\SteamLibrary\steamapps\common\NeosVRBetaBuilds\NeosStandalone\app\Neos_Data\Managed\FrooxEngine.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="NeosModLoader">
       <HintPath>R:\SteamLibrary\steamapps\common\NeosVR\Libraries\NeosModLoader.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
