@@ -38,11 +38,11 @@ public class NeosBetterGizmos : NeosMod {
 	private static ModConfigurationKey<bool> PersistentGizmo = new ModConfigurationKey<bool>("PersistentGizmo", "Should gizmos be persistent", () => true);
 
 	[AutoRegisterConfigKey]
-    private static ModConfigurationKey<bool> UseUIXButtons = new ModConfigurationKey<bool>("UseUIXButtons", "Experimental: use UIX buttons instead of default box gizmos", () => false);
+	private static ModConfigurationKey<bool> UseUIXButtons = new ModConfigurationKey<bool>("UseUIXButtons", "Experimental: use UIX buttons instead of default box gizmos", () => false);
 
-    private static readonly float3 uixScale = new float3(0.001f, 0.001f, 0.001f);
+	private static readonly float3 uixScale = new float3(0.001f, 0.001f, 0.001f);
 
-    [HarmonyPatch(typeof(SlotGizmo), "OnAttach")]
+	[HarmonyPatch(typeof(SlotGizmo), "OnAttach")]
 	class SlotGizmo_OnAttach_Patch {
 		public static void Postfix(SlotGizmo __instance, TransformRelayRef ____targetSlot) {
 				}
@@ -66,7 +66,6 @@ public class NeosBetterGizmos : NeosMod {
 			}
 
 			LookAtUser lau;
-
 			try {
 				lau = btns.AttachComponent<LookAtUser>();
 				//AttachComponent may error here, if so ReleaseLink failed
@@ -82,16 +81,14 @@ public class NeosBetterGizmos : NeosMod {
 			vc.Source.Value = btns.Rotation_Field.ReferenceID;
 			vc.Target.Value = name.Rotation_Field.ReferenceID;
 
-			//Set ZTest for the name material?
-			//Probably want a new material for it as we want to avoid affecting existing gizmos and other users when possible
-
 			if (Config.GetValue(ShowRefID)) {
 				Slot refslot = name.AddSlot("RefID", false);
-				refslot.LocalPosition = new float3(0,0.02f,0);
+				refslot.LocalPosition = new float3(0, 0.02f, 0);
 				TextRenderer textRenderer = refslot.AttachComponent<TextRenderer>(true, null);
+				//create shared
 				TextUnlitMaterial textUnlitMaterial = refslot.AttachComponent<TextUnlitMaterial>(true, null);
-				//textUnlitMaterial.ZTest.Value = Config.GetValue(RenderOnTop) ? ZTest.Always : ZTest.Equal;
-				textUnlitMaterial.TintColor.Value = new color(1,1,1,0.6f);
+				textUnlitMaterial.ZTest.Value = Config.GetValue(RenderOnTop) ? ZTest.Always : ZTest.Equal;
+				textUnlitMaterial.TintColor.Value = new color(1, 1, 1, 0.6f);
 				textRenderer.Bounded.Value = true;
 				textRenderer.BoundsSize.Value = new float2(0.05f, 0.02f);
 				textRenderer.HorizontalAutoSize.Value = true;
