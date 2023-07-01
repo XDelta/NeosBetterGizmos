@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("NeosBetterGizmos")]
-[assembly: AssemblyDescription("Gizmos will rotate to look toward you")]
+[assembly: AssemblyDescription("Multiple tweaks to gizmo look and functionality")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Delta")]
 [assembly: AssemblyProduct("NeosBetterGizmos")]
-[assembly: AssemblyCopyright("Copyright © Delta 2022")]
+[assembly: AssemblyCopyright("Copyright © Delta 2023")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
