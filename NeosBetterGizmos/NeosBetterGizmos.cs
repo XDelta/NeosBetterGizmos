@@ -37,11 +37,6 @@ public class NeosBetterGizmos : NeosMod {
 	[AutoRegisterConfigKey]
 	private static ModConfigurationKey<bool> PersistentGizmo = new ModConfigurationKey<bool>("PersistentGizmo", "Should gizmos be persistent", () => true);
 
-	[AutoRegisterConfigKey]
-	private static ModConfigurationKey<bool> UseUIXButtons = new ModConfigurationKey<bool>("UseUIXButtons", "Experimental: use UIX buttons instead of default box gizmos", () => false);
-
-	private static readonly float3 uixScale = new float3(0.001f, 0.001f, 0.001f);
-
 	[HarmonyPatch(typeof(SlotGizmo), "OnAttach")]
 	class SlotGizmo_OnAttach_Patch {
 		public static void Postfix(SlotGizmo __instance, TransformRelayRef ____targetSlot) {
@@ -101,8 +96,6 @@ public class NeosBetterGizmos : NeosMod {
 					Error(e);
 				}
 			}
-			if (Config.GetValue(UseUIXButtons)) {
-            }
 		}
 	}
 	[HarmonyPatch(typeof(SlotGizmo), "AddGizmoButton", new Type[] {typeof(Worker), typeof(Action<Slot>)})]
