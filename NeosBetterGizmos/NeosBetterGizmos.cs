@@ -25,6 +25,8 @@ public class NeosBetterGizmos : NeosMod {
 		harmony.PatchAll();
 	}
 
+	[AutoRegisterConfigKey]
+	private static ModConfigurationKey<bool> RenderOnTop = new ModConfigurationKey<bool>("RenderOnTop", "Experimental: Render gizmos on top", () => true);
 
 
 	[AutoRegisterConfigKey]
@@ -51,6 +53,15 @@ public class NeosBetterGizmos : NeosMod {
 			Debug("Attempted to release link for Buttons");
 			name.Rotation_Field.ReleaseLink(name.Rotation_Field.ActiveLink);
 			Debug("Attempted to release link for Name");
+
+			//Shared Text Material for Rendering on top
+			if (Config.GetValue(RenderOnTop)) {
+				TextUnlitMaterial textMat = __instance.World.GetSharedComponentOrCreate("Text_DefaultMaterial_BetterGizmos", delegate (TextUnlitMaterial mat) {
+					mat.ZTest.Value = ZTest.Always;
+				}, 0, false, false, null);
+				name.GetComponent<TextUnlitMaterial>().Destroy();
+				name.GetComponent<TextRenderer>().Material.Target = textMat;
+			}
 
 			LookAtUser lau;
 
@@ -94,5 +105,51 @@ public class NeosBetterGizmos : NeosMod {
 			if (Config.GetValue(UseUIXButtons)) {
             }
 		}
+	}
+
+	[HarmonyPatch(typeof(SlotGizmo), "RegenerateButtons")]
+	class SlotGizmo_RegenerateButtons_Patch {
+		public static void Postfix(SlotGizmo __instance) {
+			ReplaceMats(__instance); //Replace Mats needs to run after the buttons exist
+		}
+	}
+	private static void ReplaceMats(SlotGizmo __instance) {
+		if (!Config.GetValue(RenderOnTop)) {
+			return;
+		}
+		var btns = __instance.Slot.FindChild((Slot c) => c.Name == "Buttons");
+		FresnelMaterial sR = __instance.World.GetSharedComponentOrCreate("SlotGizmo_Icon_R_BetterGizmos", delegate (FresnelMaterial f) {
+			f.NearColor.Value = new color(1f, 0f, 0f, 1f);
+			f.FarColor.Value = new color(0.5f, 0f, 0f, 1f);
+			f.ZTest.Value = ZTest.Always;
+		}, 0, false, false, null);
+
+		FresnelMaterial sG = __instance.World.GetSharedComponentOrCreate("SlotGizmo_Icon_G_BetterGizmos", delegate (FresnelMaterial f) {
+			f.NearColor.Value = new color(0f, 1f, 0f, 1f);
+			f.FarColor.Value = new color(0f, 0.5f, 0f, 1f);
+			f.ZTest.Value = ZTest.Always;
+		}, 0, false, false, null);
+
+		FresnelMaterial sB = __instance.World.GetSharedComponentOrCreate("SlotGizmo_Icon_B_BetterGizmos", delegate (FresnelMaterial f) {
+			f.NearColor.Value = new color(0f, 0f, 1f, 1f);
+			f.FarColor.Value = new color(0f, 0f, 0.5f, 1f);
+			f.ZTest.Value = ZTest.Always;
+		}, 0, false, false, null);
+
+		var transformOffset = btns[2].FindChild((Slot c) => c.Name == "Offset");
+		transformOffset[0].GetComponent<MeshRenderer>().ReplaceAllMaterials(sR);
+		transformOffset[1].GetComponent<MeshRenderer>().ReplaceAllMaterials(sG);
+		transformOffset[2].GetComponent<MeshRenderer>().ReplaceAllMaterials(sB);
+
+		var rotationIcons = btns[3].FindChild((Slot c) => c.Name == "Icon");
+		rotationIcons[0].GetComponent<MeshRenderer>().ReplaceAllMaterials(sR);
+		rotationIcons[1].GetComponent<MeshRenderer>().ReplaceAllMaterials(sG);
+		rotationIcons[2].GetComponent<MeshRenderer>().ReplaceAllMaterials(sB);
+
+		var scaleOffset = btns[4].FindChild((Slot c) => c.Name == "Offset");
+		scaleOffset[0].GetComponent<MeshRenderer>().ReplaceAllMaterials(sR);
+		scaleOffset[1].GetComponent<MeshRenderer>().ReplaceAllMaterials(sG);
+		scaleOffset[2].GetComponent<MeshRenderer>().ReplaceAllMaterials(sB);
+		Msg("Replaced Mats");
 	}
 }
