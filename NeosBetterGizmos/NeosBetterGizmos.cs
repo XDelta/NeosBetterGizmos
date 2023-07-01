@@ -28,6 +28,8 @@ public class NeosBetterGizmos : NeosMod {
 	[AutoRegisterConfigKey]
 	private static ModConfigurationKey<bool> RenderOnTop = new ModConfigurationKey<bool>("RenderOnTop", "Experimental: Render gizmos on top", () => true);
 
+	[AutoRegisterConfigKey]
+	private static ModConfigurationKey<bool> AdditionGizmoIcons = new ModConfigurationKey<bool>("AdditionGizmoIcons", "Experimental: Enable additional gizmo button icons and models", () => true);
 
 	[AutoRegisterConfigKey]
 	private static ModConfigurationKey<bool> ShowRefID = new ModConfigurationKey<bool>("ShowRefID", "Show RefID on Gizmo", () => false);
@@ -105,6 +107,123 @@ public class NeosBetterGizmos : NeosMod {
 			if (Config.GetValue(UseUIXButtons)) {
             }
 		}
+	}
+	[HarmonyPatch(typeof(SlotGizmo), "AddGizmoButton", new Type[] {typeof(Worker), typeof(Action<Slot>)})]
+	class SlotGizmo_AddGizmoButton_Patch {
+		public static bool Prefix(SlotGizmo __instance, Worker worker, SyncRef<Slot> ____buttonsSlot, ref Action<Slot> iconGenerator) {
+			if (!Config.GetValue(AdditionGizmoIcons)) {
+				return true; //Skip adding extra icons
+			}
+			if (iconGenerator is not null) {
+				Msg($"Worker already has a generator: {iconGenerator}");
+				return true; //Already has a generator
+			}
+			//LightGizmo
+			var giz = worker.GizmoType;
+			if (giz == typeof(BoxColliderGizmo)) {
+				Msg("BoxCollider");
+				iconGenerator = new Action<Slot>(GenerationEmptyIcon);
+			} else if (giz == typeof(BoxMeshGizmo)) {
+				Msg("BoxMesh");
+				iconGenerator = new Action<Slot>(GenerationBoxMeshIcon);
+			} else if (giz == typeof(MeshRendererGizmo)) {
+				Msg("MeshRenderer");
+				iconGenerator = new Action<Slot>(GenerationEmptyIcon);
+			} else if (giz == typeof(MaterialGizmo)) {
+				Msg("Material");
+				iconGenerator = new Action<Slot>(GenerationMaterialIcon);
+			} else if (giz == typeof(SphereColliderGizmo)) {
+				Msg("SphereCollider");
+				iconGenerator = new Action<Slot>(GenerationEmptyIcon);
+			} else if (giz == typeof(SphereMeshGizmo)) {
+				Msg("SphereMesh");
+				iconGenerator = new Action<Slot>(GenerationEmptyIcon);
+			} else if (giz == typeof(IcoSphereMeshGizmo)) {
+				Msg("IcoSphereMesh");
+				iconGenerator = new Action<Slot>(GenerationEmptyIcon);
+			} else if (giz == typeof(TextGizmo)) {
+				Msg("TextGizmo");
+				iconGenerator = new Action<Slot>(GenerationTextIcon);
+			} else {
+				Msg($"No generator override found for {worker.GizmoType}");
+			}
+			return true;
+		}
+	}
+	private static void GenerationBoxMeshIcon(Slot slot) {
+		TubeBoxMesh sharedComponentOrCreate = slot.World.GetSharedComponentOrCreate("BoxMeshGizmo_Icon_BetterGizmos", delegate (TubeBoxMesh mesh) {
+			mesh.TubeRadius.Value = 0.05f;
+			mesh.Size.Value = new float3(0.9f, 0.9f, 0.9f);
+		}, 0, false, false, null);
+		FresnelMaterial material;
+		if (Config.GetValue(RenderOnTop)) {
+			material = slot.World.GetSharedComponentOrCreate("BoxMeshGizmo_Mat_Icon_Overlay_BetterGizmos", delegate (FresnelMaterial f) {
+				f.NearColor.Value = new color(0f, 1f, 0f, 1f);
+				f.FarColor.Value = new color(0f, 0.5f, 0f, 1f);
+				f.ZTest.Value = ZTest.Always;
+			}, 0, false, false, null);
+		} else {
+			material = slot.World.GetSharedComponentOrCreate("BoxMeshGizmo_Mat_Icon_BetterGizmos", delegate (FresnelMaterial f) {
+				f.NearColor.Value = new color(0f, 1f, 0f, 1f);
+				f.FarColor.Value = new color(0f, 0.5f, 0f, 1f);
+			}, 0, false, false, null);
+		}
+		Slot box = slot.AddSlot("Box", true);
+		box.AttachMesh(sharedComponentOrCreate, material, 0);
+	}
+
+	private static void GenerationMaterialIcon(Slot slot) {
+		IcoSphereMesh sharedComponentOrCreate = slot.World.GetSharedComponentOrCreate("MaterialGizmo_Icon_BetterGizmos", delegate (IcoSphereMesh mesh) {
+			mesh.Radius.Value = 0.5f;
+			mesh.Subdivisions.Value = 1;
+		}, 0, false, false, null);
+		FresnelMaterial material;
+		if (Config.GetValue(RenderOnTop)) {
+			material = slot.World.GetSharedComponentOrCreate("MaterialGizmo_Mat_Icon_Overlay_BetterGizmos", delegate (FresnelMaterial f) {
+				f.NearColor.Value = new color(0.7f, 1f);
+				f.FarColor.Value = new color(0.25f, 1f);
+				f.ZTest.Value = ZTest.Always;
+			}, 0, false, false, null);
+		} else {
+			material = slot.World.GetSharedComponentOrCreate("MaterialGizmo_Mat_Icon_BetterGizmos", delegate (FresnelMaterial f) {
+				f.NearColor.Value = new color(0.7f, 1f);
+				f.FarColor.Value = new color(0.25f, 1f);
+			}, 0, false, false, null);
+		}
+		Slot matorb = slot.AddSlot("Material Orb", true);
+		matorb.AttachMesh(sharedComponentOrCreate, material, 0);
+	}
+	private static void GenerationTextIcon(Slot slot) {
+		QuadMesh sharedComponentOrCreate = slot.World.GetSharedComponentOrCreate("TextGizmo_Icon_BetterGizmos", delegate (QuadMesh mesh) {
+			mesh.Size.Value = float2.One;
+			mesh.ScaleUVWithSize.Value = false;
+		}, 0, false, false, null);
+		Slot iconSlot = slot.AddSlot("EditIcon", true);
+		UnlitMaterial material = slot.World.GetSharedComponentOrCreate("TextGizmo_Mat_Icon_BetterGizmos", delegate (UnlitMaterial mat) {
+			mat.Texture.Target = mat.Slot.AttachTexture(NeosAssets.Testing.UI.EditText, true, false, false, false, TextureWrapMode.Repeat, null);
+		}, 0, false, false, null);
+		iconSlot.AttachMesh(sharedComponentOrCreate, material, 0);
+	}
+	private static void GenerationEmptyIcon(Slot slot) {
+		BevelSoliStripeMesh sharedComponentOrCreate = slot.World.GetSharedComponentOrCreate("EmptyGizmo_Icon_BetterGizmos", delegate (BevelSoliStripeMesh mesh) {
+			mesh.Width = 1.4f;
+		}, 0, false, false, null);
+		FresnelMaterial material;
+		if (Config.GetValue(RenderOnTop)) {
+			material = slot.World.GetSharedComponentOrCreate("EmptyGizmo_Mat_Icon_Overlay_BetterGizmos", delegate (FresnelMaterial f) {
+				f.NearColor.Value = new color(1, 0.25f, 0.25f, 1f);
+				f.FarColor.Value = new color(0, 0, 1, 1f);
+				f.ZTest.Value = ZTest.Always;
+			}, 0, false, false, null);
+		} else {
+			material = slot.World.GetSharedComponentOrCreate("EmptyGizmo_Mat_Icon_BetterGizmos", delegate (FresnelMaterial f) {
+				f.NearColor.Value = new color(1, 0.25f, 0.25f, 1f);
+				f.FarColor.Value = new color(0, 0, 1, 1f);
+			}, 0, false, false, null);
+		}
+		Slot matorb = slot.AddSlot("No Icon", true);
+		matorb.LocalRotation = floatQ.AxisAngle(float3.Forward, 45f);
+		matorb.AttachMesh(sharedComponentOrCreate, material, 0);
 	}
 
 	[HarmonyPatch(typeof(SlotGizmo), "RegenerateButtons")]
