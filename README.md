@@ -11,5 +11,9 @@ A [NeosModLoader](https://github.com/neos-modding-group/NeosModLoader) mod for [
 
 | Config Option     | Default | Description |
 | ------------------ | ------- | ----------- |
+| `RenderOnTop` | `true` | If `true` will make your gizmos overlay |
+| `AdditionGizmoIcons` | `true` | If `true` will show additional gizmo button icons and models |
 | `ShowRefID` | `false` | If `true` will show RefIDs on your gizmos |
-| `PersistentGizmo` | `true` | If `false`, gizmos will be made non-persistent |
+| `PersistentGizmo` | `true` | If `false` gizmos will be made non-persistent |
+
+![Example showing extra gizmos](https://github.com/XDelta/NeosBetterGizmos/assets/7883807/d1959b9d-ff42-4629-ac9c-4e5bd18e867d)
