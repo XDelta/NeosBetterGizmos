@@ -98,6 +98,18 @@ public class NeosBetterGizmos : NeosMod {
 			}
 		}
 	}
+
+	[HarmonyPatch(typeof(SlotGizmoButton), "OnChanges")]
+	class SlotGizmoButton_OnChanges_Patch {
+		public static void Postfix(SlotGizmoButton __instance, DriveRef<FresnelMaterial> ____buttonMaterial) {
+			if (Config.GetValue(RenderOnTop)) {
+				____buttonMaterial.Target.ZTest.Value = ZTest.Always;
+				____buttonMaterial.Target.RenderQueue.Value = 2501;
+				return;
+			}
+		}
+	}
+
 	[HarmonyPatch(typeof(SlotGizmo), "AddGizmoButton", new Type[] {typeof(Worker), typeof(Action<Slot>)})]
 	class SlotGizmo_AddGizmoButton_Patch {
 		public static bool Prefix(SlotGizmo __instance, Worker worker, SyncRef<Slot> ____buttonsSlot, ref Action<Slot> iconGenerator) {
